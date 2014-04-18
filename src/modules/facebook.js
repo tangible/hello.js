@@ -41,6 +41,17 @@ function format(o){
 	return o;
 }
 
+function dataURItoBlob(dataURI) {
+	var reg = /^data\:([^;,]+(\;charset=[^;,]+)?)(\;base64)?,/i;
+	var m = dataURI.match(reg);
+	var binary = atob(dataURI.replace(reg,''));
+	var array = [];
+	for(var i = 0; i < binary.length; i++) {
+		array.push(binary.charCodeAt(i));
+	}
+	return new Blob([new Uint8Array(array)], {type: m[1]});
+}
+
 var base = 'https://graph.facebook.com/';
 
 hello.init({
@@ -101,7 +112,20 @@ hello.init({
 		post : {
 			'me/share' : 'me/feed',
 			'me/albums' : 'me/albums',
-			'me/album' : '@{id}/photos'
+			'me/album' : '@{id}/photos',
+			'me/photos': function (p, callback) {
+				var data = p.data;
+
+				if (data.file && typeof(data.file) === 'string') {
+					data.source = dataURItoBlob(data.file);
+					data.file = null;
+					delete data.file;
+				}
+
+				p.data = data;
+
+				callback('me/photos');
+			}
 		},
 
 		// Map DELETE requests
