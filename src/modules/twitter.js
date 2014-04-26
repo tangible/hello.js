@@ -159,7 +159,8 @@ hello.init({
 		// Ensure that you define an oauth_proxy
 		oauth : {
 			version : "1.0a",
-			auth	: "https://twitter.com/oauth/authorize",
+      // https://dev.twitter.com/docs/api/1/get/oauth/authenticate
+      auth  : "https://twitter.com/oauth/authenticate?force_login=true",
 			request : 'https://twitter.com/oauth/request_token',
 			token	: 'https://twitter.com/oauth/access_token'
 		},
